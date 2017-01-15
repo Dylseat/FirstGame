@@ -7,15 +7,24 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField]
     float speed;
     [SerializeField]
-    bool isTurnedRight = true;
+    float jumpForce = 10f;
     [SerializeField]
-    SpriteRenderer m_SpriteRenderer;
-    [SerializeField]
-    float jumpForce = 250f;
+    Animator m_Anim;
+
+    const float walkDeadZone = 0.1f;
+    Rigidbody2D m_Body;
+
+    public Transform groundCheck;
+    bool m_Ground = false;
+    float rayonGround = 0.3f;
+    public LayerMask Ground;
+    [SerializeField] bool isTurnedRight;
+
     // Use this for initialization
     void Start()
     {
-
+        m_Body = GetComponent<Rigidbody2D>();
+        m_Anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -25,35 +34,24 @@ public class PlayerCharacter : MonoBehaviour
     }
     void FixedUpdate()
     {
-
+        m_Ground = Physics2D.OverlapCircle(groundCheck.position, rayonGround, Ground);
+        m_Anim.SetBool("Ground", m_Ground);
     }
     public void Move(float horizontal, bool jump)
     {
-        transform.position += new Vector3(speed * horizontal * Time.deltaTime, 0.0f, 0.0f);
+        m_Body.velocity = new Vector2(speed * horizontal, m_Body.velocity.y);
 
-        if (horizontal > 0 && !isTurnedRight)
+        if (jump && m_Ground) //Jump when button is pressed
         {
-            Flip();
+            m_Body.velocity = new Vector2(m_Body.velocity.x, jumpForce);
         }
-        else if (horizontal < 0 && isTurnedRight)
+        if (Mathf.Abs(horizontal) < walkDeadZone)
         {
-            Flip();
+            m_Anim.SetBool("Walk", false);
         }
-
-        if (jump) //Jump when button is pressed
+        else
         {
-            GetComponent<Rigidbody2D>().AddForce(new Vector3(0.0f, jumpForce, 0.0f));
+            m_Anim.SetBool("Walk", true);
         }
-    }
-
-    void Flip()
-    {
-        Vector3 theScale = transform.localScale;
-        theScale.x *= -1;
-        transform.localScale = theScale;
-
-        //m_SpriteRenderer.flipX = !m_SpriteRenderer.flipX;
-
-        isTurnedRight = !isTurnedRight;
     }
 }

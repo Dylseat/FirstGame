@@ -24,9 +24,6 @@ public class UserControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-
-        jump = Input.GetKeyDown(KeyCode.Space);//Hardcoded, unable to change the button
         jump = Input.GetButtonDown("Jump");
         //GetButtonDown, true when clik on button
         //GetButton, true if pressed
@@ -38,9 +35,6 @@ public class UserControl : MonoBehaviour
         {
             horizontal = Mathf.Sign(horizontal);
         }
-
-
-
         pChar.Move(horizontal, jump);
     }
 }
