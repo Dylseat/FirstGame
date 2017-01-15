@@ -11,8 +11,9 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField]
     Animator m_Anim;
 
-    const float walkDeadZone = 0.1f;
+    const float walkDeadZone = 0.3f;
     Rigidbody2D m_Body;
+    int doubleJump = 0;
 
     public Transform groundCheck;
     bool m_Ground = false;
@@ -30,7 +31,11 @@ public class PlayerCharacter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (m_Ground)
+        {
+            doubleJump = 1;
+        }
+            
     }
     void FixedUpdate()
     {
@@ -41,9 +46,13 @@ public class PlayerCharacter : MonoBehaviour
     {
         m_Body.velocity = new Vector2(speed * horizontal, m_Body.velocity.y);
 
-        if (jump && m_Ground) //Jump when button is pressed
+        if (jump && (m_Ground || doubleJump == 1)) //Jump when button is pressed
         {
             m_Body.velocity = new Vector2(m_Body.velocity.x, jumpForce);
+            if (!m_Ground)
+            {
+                doubleJump--;
+            }
         }
         if (Mathf.Abs(horizontal) < walkDeadZone)
         {
