@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerCharacter : MonoBehaviour
 {
@@ -11,15 +12,15 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField]
     Animator m_Anim;
 
-    const float walkDeadZone = 0.3f;
     Rigidbody2D m_Body;
+    const float walkDeadZone = 0.3f;
     int doubleJump = 0;
-
-    public Transform groundCheck;
+    [SerializeField]
+    Transform groundCheck;
     bool m_Ground = false;
     float rayonGround = 0.3f;
     public LayerMask Ground;
-    [SerializeField] bool isTurnedRight;
+
 
     // Use this for initialization
     void Start()
@@ -35,7 +36,6 @@ public class PlayerCharacter : MonoBehaviour
         {
             doubleJump = 1;
         }
-            
     }
     void FixedUpdate()
     {
@@ -46,7 +46,8 @@ public class PlayerCharacter : MonoBehaviour
     {
         m_Body.velocity = new Vector2(speed * horizontal, m_Body.velocity.y);
 
-        if (jump && (m_Ground || doubleJump == 1)) //Jump when button is pressed
+        ////////////////Jump and double jump//////////////////
+        if (jump && (m_Ground || doubleJump == 1)) 
         {
             m_Body.velocity = new Vector2(m_Body.velocity.x, jumpForce);
             if (!m_Ground)
@@ -54,6 +55,7 @@ public class PlayerCharacter : MonoBehaviour
                 doubleJump--;
             }
         }
+        ///////////Animation managment///////////////
         if (Mathf.Abs(horizontal) < walkDeadZone)
         {
             m_Anim.SetBool("Walk", false);
@@ -61,6 +63,13 @@ public class PlayerCharacter : MonoBehaviour
         else
         {
             m_Anim.SetBool("Walk", true);
+        }
+    }
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Obstacle")
+        {
+            SceneManager.LoadScene("lvl1");
         }
     }
 }
