@@ -11,12 +11,14 @@ public class PlayerCharacter : MonoBehaviour
     float jumpForce = 10f;
     [SerializeField]
     Animator m_Anim;
+    [SerializeField]
+    bool IsTurnedRight = true;
+    [SerializeField]
+    Transform groundCheck;
 
     Rigidbody2D m_Body;
     const float walkDeadZone = 0.3f;
     int doubleJump = 0;
-    [SerializeField]
-    Transform groundCheck;
     bool m_Ground = false;
     float rayonGround = 0.3f;
     public LayerMask Ground;
@@ -45,7 +47,15 @@ public class PlayerCharacter : MonoBehaviour
     public void Move(float horizontal, bool jump)
     {
         m_Body.velocity = new Vector2(speed * horizontal, m_Body.velocity.y);
-
+       
+        if (horizontal > 0 && !IsTurnedRight)
+        {
+            Flip();
+        }
+        else if (horizontal < 0 && IsTurnedRight)
+        {
+            Flip();
+        }
         ////////////////Jump and double jump//////////////////
         if (jump && (m_Ground || doubleJump == 1)) 
         {
@@ -55,6 +65,7 @@ public class PlayerCharacter : MonoBehaviour
                 doubleJump--;
             }
         }
+    
         ///////////Animation managment///////////////
         if (Mathf.Abs(horizontal) < walkDeadZone)
         {
@@ -64,6 +75,13 @@ public class PlayerCharacter : MonoBehaviour
         {
             m_Anim.SetBool("Walk", true);
         }
+    }
+    void Flip()
+    {
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
+        IsTurnedRight = !IsTurnedRight;
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
