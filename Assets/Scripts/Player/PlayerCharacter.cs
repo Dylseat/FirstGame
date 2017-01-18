@@ -69,7 +69,7 @@ public class PlayerCharacter : MonoBehaviour
     {
         if (collision.gameObject.tag == "Obstacle")
         {
-            SceneManager.LoadScene("lvl1");
+            SceneManager.LoadScene("level1");
         }
     }
 }
