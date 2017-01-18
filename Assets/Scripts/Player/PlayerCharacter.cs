@@ -10,18 +10,21 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField]
     float jumpForce = 10f;
     [SerializeField]
-    Animator m_Anim;
-    [SerializeField]
     bool IsTurnedRight = true;
     [SerializeField]
     Transform groundCheck;
+    [SerializeField]
+    LayerMask Ground;
+    [SerializeField]
+    AudioClip SoundJump;
 
     Rigidbody2D m_Body;
+    Animator m_Anim;
+    AudioSource m_Sound;
     const float walkDeadZone = 0.3f;
     int doubleJump = 0;
     bool m_Ground = false;
     float rayonGround = 0.3f;
-    public LayerMask Ground;
 
 
     // Use this for initialization
@@ -29,6 +32,7 @@ public class PlayerCharacter : MonoBehaviour
     {
         m_Body = GetComponent<Rigidbody2D>();
         m_Anim = GetComponent<Animator>();
+        m_Sound = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -60,6 +64,7 @@ public class PlayerCharacter : MonoBehaviour
         if (jump && (m_Ground || doubleJump == 1)) 
         {
             m_Body.velocity = new Vector2(m_Body.velocity.x, jumpForce);
+            m_Sound.PlayOneShot(SoundJump);
             if (!m_Ground)
             {
                 doubleJump--;
