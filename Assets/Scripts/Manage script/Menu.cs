@@ -17,7 +17,7 @@ public class Menu : MonoBehaviour
     {
        
     }
-    public void SwwitchScene(string sceneName)
+    public void SwitchScene(string sceneName)
     {
         SceneManager.LoadScene("level1");
     }

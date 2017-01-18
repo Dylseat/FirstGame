@@ -6,9 +6,9 @@ public class PlayerCharacter : MonoBehaviour
 {
 
     [SerializeField]
-    float speed;
+    float speed = 12;
     [SerializeField]
-    float jumpForce = 10f;
+    float jumpForce = 15f;
     [SerializeField]
     bool IsTurnedRight = true;
     [SerializeField]
@@ -24,7 +24,8 @@ public class PlayerCharacter : MonoBehaviour
     const float walkDeadZone = 0.3f;
     int doubleJump = 0;
     bool m_Ground = false;
-    float rayonGround = 0.3f;
+    float rayonGround = 0.15f;
+    bool playerDead;
 
 
     // Use this for initialization
@@ -50,15 +51,22 @@ public class PlayerCharacter : MonoBehaviour
     }
     public void Move(float horizontal, bool jump)
     {
-        m_Body.velocity = new Vector2(speed * horizontal, m_Body.velocity.y);
-       
-        if (horizontal > 0 && !IsTurnedRight)
+        if(!playerDead)
         {
-            Flip();
+            m_Body.velocity = new Vector2(speed * horizontal, m_Body.velocity.y);
+
+            if (horizontal > 0 && !IsTurnedRight)
+            {
+                Flip();
+            }
+            else if (horizontal < 0 && IsTurnedRight)
+            {
+                Flip();
+            }
         }
-        else if (horizontal < 0 && IsTurnedRight)
+        else
         {
-            Flip();
+            PlayerDead();
         }
         ////////////////Jump and double jump//////////////////
         if (jump && (m_Ground || doubleJump == 1)) 
@@ -92,7 +100,18 @@ public class PlayerCharacter : MonoBehaviour
     {
         if (collision.gameObject.tag == "Obstacle")
         {
-            SceneManager.LoadScene("level1");
+            playerDead = true;
         }
+    }
+    void PlayerDead()
+    {
+        m_Body.velocity = new Vector2(m_Body.velocity.x, jumpForce);
+
+        StartCoroutine(Restart());
+    }
+    IEnumerator Restart()
+    {
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene("level1");
     }
 }
