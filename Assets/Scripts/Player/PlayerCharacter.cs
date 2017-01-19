@@ -10,11 +10,17 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField]
     float jumpForce = 15f;
     [SerializeField]
+    float jumpPushForce = 10f;
+    [SerializeField]
     bool IsTurnedRight = true;
     [SerializeField]
     Transform groundCheck;
     [SerializeField]
+    Transform wallCheck;
+    [SerializeField]
     LayerMask Ground;
+    [SerializeField]
+    LayerMask Wall;
     [SerializeField]
     AudioClip SoundJump;
 
@@ -24,7 +30,9 @@ public class PlayerCharacter : MonoBehaviour
     const float walkDeadZone = 0.3f;
     int doubleJump = 0;
     bool m_Ground = false;
+    bool m_Wall = false;
     float rayonGround = 0.15f;
+    float wallTouchRadius = 0.4f;
     bool playerDead;
 
 
@@ -43,10 +51,17 @@ public class PlayerCharacter : MonoBehaviour
         {
             doubleJump = 1;
         }
+
+        if (m_Wall)
+        {
+            m_Ground = false;
+            doubleJump = 0;
+        }
     }
     void FixedUpdate()
     {
         m_Ground = Physics2D.OverlapCircle(groundCheck.position, rayonGround, Ground);
+        m_Wall = Physics2D.OverlapCircle(wallCheck.position, wallTouchRadius, Wall);
         m_Anim.SetBool("Ground", m_Ground);
     }
     public void Move(float horizontal, bool jump)
@@ -78,7 +93,12 @@ public class PlayerCharacter : MonoBehaviour
                 doubleJump--;
             }
         }
-    
+
+        if (m_Wall && jump)
+        {
+            WallJump();
+        }
+
         ///////////Animation managment///////////////
         if (Mathf.Abs(horizontal) < walkDeadZone)
         {
@@ -95,6 +115,12 @@ public class PlayerCharacter : MonoBehaviour
         theScale.x *= -1;
         transform.localScale = theScale;
         IsTurnedRight = !IsTurnedRight;
+    }
+
+    void WallJump()
+    {
+        m_Sound.PlayOneShot(SoundJump);
+        m_Body.velocity = new Vector2(jumpPushForce, jumpForce);
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
