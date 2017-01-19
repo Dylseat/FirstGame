@@ -130,6 +130,7 @@ public class PlayerCharacter : MonoBehaviour
         m_Sound.PlayOneShot(SoundJump);
         m_Body.velocity = new Vector2(jumpPushForce, jumpForce);
     }
+
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Obstacle")
