@@ -23,6 +23,8 @@ public class PlayerCharacter : MonoBehaviour
     LayerMask Wall;
     [SerializeField]
     AudioClip SoundJump;
+    [SerializeField]
+    int maxHealth = 3;
 
     Rigidbody2D m_Body;
     Animator m_Anim;
@@ -33,6 +35,7 @@ public class PlayerCharacter : MonoBehaviour
     bool m_Wall = false;
     float rayonGround = 0.15f;
     float wallTouchRadius = 0.4f;
+    public int currentHealth;
     bool playerDead;
 
 
@@ -42,6 +45,7 @@ public class PlayerCharacter : MonoBehaviour
         m_Body = GetComponent<Rigidbody2D>();
         m_Anim = GetComponent<Animator>();
         m_Sound = GetComponent<AudioSource>();
+        currentHealth = maxHealth;
     }
 
     // Update is called once per frame
@@ -57,6 +61,17 @@ public class PlayerCharacter : MonoBehaviour
             m_Ground = false;
             doubleJump = 0;
         }
+
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            PlayerDead();
+        }
     }
     void FixedUpdate()
     {
@@ -65,24 +80,17 @@ public class PlayerCharacter : MonoBehaviour
         m_Anim.SetBool("Ground", m_Ground);
     }
     public void Move(float horizontal, bool jump)
-    {
-        if(!playerDead)
-        {
-            m_Body.velocity = new Vector2(speed * horizontal, m_Body.velocity.y);
+    {  
+        m_Body.velocity = new Vector2(speed * horizontal, m_Body.velocity.y);
 
-            if (horizontal > 0 && !IsTurnedRight)
-            {
-                Flip();
-            }
-            else if (horizontal < 0 && IsTurnedRight)
-            {
-                Flip();
-            }
-        }
-        else
+        if (horizontal > 0 && !IsTurnedRight)
         {
-            PlayerDead();
+            Flip();
         }
+        else if (horizontal < 0 && IsTurnedRight)
+        {
+            Flip();
+        }      
         ////////////////Jump and double jump//////////////////
         if (jump && (m_Ground || doubleJump == 1)) 
         {
@@ -126,7 +134,7 @@ public class PlayerCharacter : MonoBehaviour
     {
         if (collision.gameObject.tag == "Obstacle")
         {
-            playerDead = true;
+            currentHealth--;
         }
     }
     void PlayerDead()

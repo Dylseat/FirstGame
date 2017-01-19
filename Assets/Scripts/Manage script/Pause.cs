@@ -8,14 +8,13 @@ public class Pause : MonoBehaviour
     GameObject PauseUI;
 
     private bool Paused = false;
-	// Use this for initialization
-	void Start ()
+
+    void Start()
     {
         PauseUI.SetActive(false);
-	}
-	
-	// Update is called once per frame
-	void Update ()
+    }
+
+    void Update()
     {
         if (Input.GetButtonDown("Pause"))
         {
@@ -36,13 +35,24 @@ public class Pause : MonoBehaviour
 
     }
 
-    public void Reprendre()
+    public void Resume()
     {
         Paused = false;
     }
 
-    public void SwitchScene(string sceneName)
+    public void Restart()
+    {
+        SceneManager.LoadScene("Level1");
+    }
+
+    public void MainMenu()
     {
         SceneManager.LoadScene("Menu");
+        Paused = false;
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 }
